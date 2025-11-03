@@ -13,7 +13,7 @@
       "position": [512, -128],
       "type": "a2a/mastra-a2a-node",
       "typeVersion": 1,
-      "url": "https://syble-contradictive-rhonda.ngrok-free.dev/api/a2a/taskAgent"
+      "url": "telextaskkeeper-production.up.railway.app/api/a2a/taskAgent"
 
     }
   ],
