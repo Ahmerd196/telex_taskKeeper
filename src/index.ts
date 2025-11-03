@@ -93,8 +93,11 @@ app.post("/api/a2a/taskAgent", async (req, res) => {
 
         return res.json({
           action: "send_message",
-          payload: { channelId, text: body }
-        });
+          payload: { channelId, text: body },
+          results: {
+            status: "ok",
+            count: list.length}
+          });
       }
     }
 
@@ -118,7 +121,12 @@ app.post("/api/a2a/taskAgent", async (req, res) => {
     payload: {
       channelId,
       text: `✅ Task created: "${task.title}"${dueText}`
+    },
+    results: {
+      status: "ok",
+      taskId
     }
+
   });
 
   } catch (err) {
