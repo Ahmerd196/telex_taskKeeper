@@ -1,0 +1,56 @@
+---
+
+## **2️⃣ Blog Post Draft (700–900 words)**
+
+**Title:** Boost Your Productivity with TaskKeeper: A Smart Task Management Agent for Telex  
+
+**Draft:**
+
+Managing tasks effectively is essential for both individual productivity and smooth team collaboration. While there are countless productivity tools available, integrating task management directly into your communication platform is a game-changer. Enter **TaskKeeper**, an agent designed specifically for Telex users, bringing intelligent task creation, tracking, and management right where your team communicates.  
+
+**Why TaskKeeper?**  
+Many teams struggle to keep track of assignments, deadlines, and updates, especially when these are scattered across emails, messaging platforms, and spreadsheets. TaskKeeper solves this by allowing users to create tasks directly from natural language commands in Telex channels. Whether it’s “Remind me to submit the report tomorrow at 5 PM” or “Add task: Prepare meeting slides,” TaskKeeper understands your intent and captures it instantly.  
+
+**Key Features**  
+
+- **Natural Language Task Creation:** Type a simple command, and TaskKeeper extracts the task title, optional due date, and assigns it to the user or a teammate.  
+- **Task Summaries:** At any time, users can request `/tasks summary` or `/tasks list` to see a clear, up-to-date overview of all pending tasks in the channel.  
+- **Assignment & Completion:** Action buttons allow team members to assign tasks or mark them as done with a single click, keeping everyone on the same page.  
+- **Clear Formatting:** Tasks display essential details such as due date, assignee, and unique ID for reference.  
+- **Integration Ready:** Built to comply with Telex A2A workflow standards, TaskKeeper is easy to deploy and configure.  
+
+**How It Works**  
+
+TaskKeeper runs as a Node.js server with endpoints exposed to Telex. When a message is received, it parses the content using **chrono-node** for due dates and uses **UUIDs** to uniquely identify tasks. Tasks are stored in memory (or can be extended to a database), and summaries are dynamically generated upon request.  
+
+Actions like marking a task done or assigning it to a teammate are handled through dedicated action endpoints. TaskKeeper ensures all messages are formatted consistently, providing clear information without clutter.  
+
+**Getting Started**  
+
+1. Clone the repository and install dependencies using `npm install`.  
+2. Set the environment variables `PORT`, `TELEX_SECRET`, and `BASE_URL`.  
+3. Run the server using `npm run dev`.  
+4. Invite TaskKeeper to your Telex channel and start creating tasks using simple commands.  
+
+**Example Commands:**  
+
+Remind me to file PR tomorrow at 5 PM
+Add task: Prepare slides for Monday meeting
+/tasks summary
+
+pgsql
+Copy code
+
+**Why Teams Love TaskKeeper**  
+
+TaskKeeper reduces context switching, prevents forgotten tasks, and improves visibility within teams. Instead of toggling between multiple tools, users can interact with tasks directly in their communication flow. The agent’s intuitive natural language interface ensures anyone can create and manage tasks without prior training.  
+
+**Future Directions**  
+
+Future updates will include persistent storage, recurring task support, and AI-based task recommendations based on team activity. TaskKeeper aims to become the go-to productivity companion for Telex users.  
+
+In a world where efficiency and clarity are paramount, TaskKeeper empowers teams to stay on top of their work without leaving their conversations. By combining simplicity with intelligent parsing and actionable commands, TaskKeeper proves that task management can be effortless and integrated.  
+
+**Try TaskKeeper today and experience the seamless task management your team deserves!**
+
+---
