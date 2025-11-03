@@ -1,0 +1,23 @@
+{
+  "active": true,
+  "category": "productivity",
+  "description": "Telex TaskKeeper: create reminders, list tasks and nudge assignees.",
+  "id": "taskKeeper-v1",
+  "long_description": "Telex TaskKeeper helps teams create reminders, list tasks, and send polite nudges.",
+  "name": "telex_taskkeeper",
+  "nodes": [
+    {
+      "id": "taskkeeper_agent",
+      "name": "taskkeeper agent",
+      "parameters": {},
+      "position": [512, -128],
+      "type": "a2a/mastra-a2a-node",
+      "typeVersion": 1,
+      "url": "https://syble-contradictive-rhonda.ngrok-free.dev/api/a2a/taskAgent"
+
+    }
+  ],
+  "pinData": {},
+  "settings": { "executionOrder": "v1" },
+  "short_description": "Task reminder & summarizer for Telex"
+}
