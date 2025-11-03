@@ -113,17 +113,14 @@ app.post("/api/a2a/taskAgent", async (req, res) => {
 
     const dueText = due ? ` — due ${dayjs(due).utc().format("YYYY-MM-DD HH:mm [UTC]")}` : "";
 
-    return res.json({
-      action: "send_message_with_actions",
-      payload: {
-        channelId,
-        text: `✅ Task created: "${task.title}"${dueText}`,
-        actions: [
-          { type: "button", text: "Mark Done", action: "mark_done", taskId },
-          { type: "button", text: "Assign", action: "assign", taskId }
-        ]
-      }
-    });
+  return res.json({
+    action: "send_message",
+    payload: {
+      channelId,
+      text: `✅ Task created: "${task.title}"${dueText}`
+    }
+  });
+
   } catch (err) {
     console.error("agent error", err);
     return res.status(500).json({ error: "internal error" });
