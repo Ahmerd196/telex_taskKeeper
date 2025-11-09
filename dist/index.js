@@ -7,6 +7,39 @@
 // import dayjs from "dayjs";
 // import utc from "dayjs/plugin/utc";
 // const chrono = require("chrono-node");
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 // dayjs.extend(utc);
 // // config
@@ -150,19 +183,50 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // The harness already sent an agent_ready handshake at construction.
 // src/index.ts
 const agent_1 = require("./agent");
+const chrono = __importStar(require("chrono-node"));
 const agent = new agent_1.AgentHarness();
-// when user sends chat to agent
+const reminders = [];
+// Helper to format date nicely
+function formatDate(d) {
+    return d.toLocaleString("en-US", { dateStyle: "short", timeStyle: "short" });
+}
+// Message handler
 agent.onMessage(async (evt) => {
-    return {
-        results: {
-            reply: `✅ TaskKeeper Agent received: ${evt.text}`
+    const text = evt.text?.trim() || "";
+    // Handle /summary
+    if (text.toLowerCase() === "/summary") {
+        if (reminders.length === 0) {
+            return { results: { reply: "📄 You have no reminders yet." } };
         }
-    };
-});
-// when Telex performs an action call to the agent
-agent.onAction(async (evt) => {
-    if (evt.action === "ping") {
-        return { results: { pong: true } };
+        const summary = reminders
+            .map((r, i) => `${i + 1}. ${r.text} at ${formatDate(r.time)}`)
+            .join("\n");
+        return { results: { reply: `📄 Your reminders:\n${summary}` } };
     }
+    // Handle natural language "remind me" commands
+    const remindRegex = /remind (.+)/i;
+    const match = text.match(remindRegex);
+    if (match) {
+        const reminderText = match[1];
+        // Use chrono-node to parse date/time
+        const parsedDate = chrono.parseDate(reminderText, new Date(), { forwardDate: true });
+        if (!parsedDate) {
+            return { results: { reply: "⚠️ Sorry, I couldn't understand the time for your reminder." } };
+        }
+        // Store reminder
+        reminders.push({ text: reminderText, time: parsedDate });
+        return {
+            results: {
+                reply: `✅ Got it! I'll remind you: "${reminderText}" at ${formatDate(parsedDate)}.`
+            }
+        };
+    }
+    // Default echo
+    return { results: { reply: `✅ TaskKeeper Agent received: ${text}` } };
+});
+// Action handler
+agent.onAction(async (evt) => {
+    if (evt.action === "ping")
+        return { results: { pong: true } };
     return { error: "unknown_action" };
 });

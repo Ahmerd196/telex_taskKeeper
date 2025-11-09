@@ -174,24 +174,66 @@
 // The harness already sent an agent_ready handshake at construction.
 
 // src/index.ts
-import { AgentHarness } from "./agent";
+import { AgentHarness, A2AEvent, A2AResponse } from "./agent";
+import * as chrono from "chrono-node";
 
 const agent = new AgentHarness();
 
-// when user sends chat to agent
-agent.onMessage(async (evt) => {
-  return {
-    results: {
-      reply: `✅ TaskKeeper Agent received: ${evt.text}`
-    }
-  };
-});
+// In-memory reminder storage
+interface Reminder {
+  text: string;
+  time: Date;
+}
+const reminders: Reminder[] = [];
 
-// when Telex performs an action call to the agent
-agent.onAction(async (evt) => {
-  if (evt.action === "ping") {
-    return { results: { pong: true } };
+// Helper to format date nicely
+function formatDate(d: Date) {
+  return d.toLocaleString("en-US", { dateStyle: "short", timeStyle: "short" });
+}
+
+// Message handler
+agent.onMessage(async (evt: A2AEvent): Promise<A2AResponse> => {
+  const text = evt.text?.trim() || "";
+
+  // Handle /summary
+  if (text.toLowerCase() === "/summary") {
+    if (reminders.length === 0) {
+      return { results: { reply: "📄 You have no reminders yet." } };
+    }
+    const summary = reminders
+      .map((r, i) => `${i + 1}. ${r.text} at ${formatDate(r.time)}`)
+      .join("\n");
+    return { results: { reply: `📄 Your reminders:\n${summary}` } };
   }
 
+  // Handle natural language "remind me" commands
+  const remindRegex = /remind (.+)/i;
+  const match = text.match(remindRegex);
+  if (match) {
+    const reminderText = match[1];
+
+    // Use chrono-node to parse date/time
+    const parsedDate = chrono.parseDate(reminderText, new Date(), { forwardDate: true });
+
+    if (!parsedDate) {
+      return { results: { reply: "⚠️ Sorry, I couldn't understand the time for your reminder." } };
+    }
+
+    // Store reminder
+    reminders.push({ text: reminderText, time: parsedDate });
+    return {
+      results: {
+        reply: `✅ Got it! I'll remind you: "${reminderText}" at ${formatDate(parsedDate)}.`
+      }
+    };
+  }
+
+  // Default echo
+  return { results: { reply: `✅ TaskKeeper Agent received: ${text}` } };
+});
+
+// Action handler
+agent.onAction(async (evt: A2AEvent): Promise<A2AResponse> => {
+  if (evt.action === "ping") return { results: { pong: true } };
   return { error: "unknown_action" };
 });
