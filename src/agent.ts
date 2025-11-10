@@ -1,4 +1,3 @@
-// src/agent.ts
 import readline from "readline";
 
 export type A2AEvent = {
@@ -7,7 +6,6 @@ export type A2AEvent = {
   userId?: string;
   text?: string;
   messageId?: string;
-  // For action calls:
   action?: string;
   taskId?: string;
   performedBy?: string;
@@ -35,6 +33,7 @@ export class AgentHarness {
     this.rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: false });
     this.rl.on("line", (line) => {
       if (!line || !line.trim()) return;
+
       let parsed: A2AEvent | null = null;
       try {
         parsed = JSON.parse(line);
@@ -42,21 +41,21 @@ export class AgentHarness {
         this.send({ error: "invalid_json" });
         return;
       }
+
       if (!parsed) return;
       this.handle(parsed);
     });
 
-    process.stdin.on("end", () => {
-      // stdin closed
-    });
+    process.stdin.on("end", () => {});
 
-    // Print a small startup handshake so graders/tools can detect agent readiness
+    // indicate agent is ready
     this.send({ results: { status: "agent_ready" } });
   }
 
   onMessage(fn: Handlers["onMessage"]) {
     this.handlers.onMessage = fn;
   }
+
   onAction(fn: Handlers["onAction"]) {
     this.handlers.onAction = fn;
   }
@@ -70,7 +69,6 @@ export class AgentHarness {
         const r = await this.handlers.onAction(evt);
         if (r) this.send(r);
       } else {
-        // unknown event type, send no-op
         this.send({ results: { status: "ignored", type: evt.type || null } });
       }
     } catch (err: any) {
@@ -81,11 +79,8 @@ export class AgentHarness {
 
   send(obj: A2AResponse) {
     try {
-      const str = JSON.stringify(obj);
-      // write to stdout newline-delimited
-      process.stdout.write(str + "\n");
+      process.stdout.write(JSON.stringify(obj) + "\n");
     } catch (err) {
-      // can't send
       console.error("send_error", err);
     }
   }

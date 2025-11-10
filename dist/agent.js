@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AgentHarness = void 0;
-// src/agent.ts
 const readline_1 = __importDefault(require("readline"));
 class AgentHarness {
     constructor() {
@@ -25,10 +24,8 @@ class AgentHarness {
                 return;
             this.handle(parsed);
         });
-        process.stdin.on("end", () => {
-            // stdin closed
-        });
-        // Print a small startup handshake so graders/tools can detect agent readiness
+        process.stdin.on("end", () => { });
+        // indicate agent is ready
         this.send({ results: { status: "agent_ready" } });
     }
     onMessage(fn) {
@@ -50,7 +47,6 @@ class AgentHarness {
                     this.send(r);
             }
             else {
-                // unknown event type, send no-op
                 this.send({ results: { status: "ignored", type: evt.type || null } });
             }
         }
@@ -61,12 +57,9 @@ class AgentHarness {
     }
     send(obj) {
         try {
-            const str = JSON.stringify(obj);
-            // write to stdout newline-delimited
-            process.stdout.write(str + "\n");
+            process.stdout.write(JSON.stringify(obj) + "\n");
         }
         catch (err) {
-            // can't send
             console.error("send_error", err);
         }
     }
