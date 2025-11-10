@@ -1,27 +1,19 @@
 import { AgentHarness } from "./agent";
-import { loadReminders, saveReminders, Reminder } from "./storage";
-import crypto from "crypto";
+import { loadReminders, saveReminders } from "./storage";
+
+let reminders: any[] = [];
 
 const agent = new AgentHarness();
 
 agent.onMessage(async (evt) => {
-  const text = (evt.text ?? evt.message?.text ?? "").trim();
-  let reminders: Reminder[] = await loadReminders();
+  const text = evt.text ?? "";
 
-  // ---- CREATE REMINDER ----
   if (text.toLowerCase().startsWith("remind me")) {
     const reminderText = text.replace(/^remind me /i, "").trim();
     const timeIso = new Date().toISOString();
 
-    const reminder: Reminder = {
-      id: crypto.randomUUID(),
-      text: reminderText,
-      time: timeIso,
-      channelId: evt.channelId ?? "unknown",
-      done: false
-    };
-
-    reminders.push(reminder);
+    reminders = await loadReminders();
+    reminders.push({ text: reminderText, time: timeIso });
     await saveReminders(reminders);
 
     return {
@@ -31,7 +23,6 @@ agent.onMessage(async (evt) => {
     };
   }
 
-  // ---- SUMMARY ----
   if (text === "/summary") {
     reminders = await loadReminders();
 
@@ -46,6 +37,5 @@ agent.onMessage(async (evt) => {
     return { results: { reply: `📄 Your reminders:\n${list}` } };
   }
 
-  // fallback
   return { results: { reply: `✅ TaskKeeper Agent received: ${text}` } };
 });
