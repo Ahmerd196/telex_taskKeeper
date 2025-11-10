@@ -1,25 +1,30 @@
-import fs from "fs";
-import path from "path";
-
-const FILE_PATH = path.resolve(__dirname, "reminders.json");
-
-export type Reminder = {
-  id: any;
-  channelId: string;
-  done: any;
-  text: string;
-  time: string;
+// declare global Telex runtime KV api
+declare const telex: {
+  kv: {
+    get(key: string): Promise<string | null>;
+    set(key: string, value: string): Promise<void>;
+  };
 };
 
-export const loadReminders = (): Reminder[] => {
-  if (!fs.existsSync(FILE_PATH)) return [];
+export type Reminder = {
+  id: string;
+  text: string;
+  time: string;
+  channelId: string;
+  done: boolean;
+};
+
+const KEY = "reminders";
+
+export async function loadReminders(): Promise<Reminder[]> {
   try {
-    return JSON.parse(fs.readFileSync(FILE_PATH, "utf-8"));
+    const raw = await telex.kv.get(KEY);
+    return raw ? JSON.parse(raw) : [];
   } catch {
     return [];
   }
-};
+}
 
-export const saveReminders = (reminders: Reminder[]) => {
-  fs.writeFileSync(FILE_PATH, JSON.stringify(reminders, null, 2));
-};
+export async function saveReminders(reminders: Reminder[]) {
+  await telex.kv.set(KEY, JSON.stringify(reminders));
+}
