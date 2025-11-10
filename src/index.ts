@@ -5,7 +5,7 @@ import crypto from "crypto";
 const agent = new AgentHarness();
 
 agent.onMessage(async (evt) => {
-  const text = evt.text ?? "";
+  const text = (evt.text ?? evt.message?.text ?? "").trim();
   let reminders: Reminder[] = await loadReminders();
 
   // ---- CREATE REMINDER ----
