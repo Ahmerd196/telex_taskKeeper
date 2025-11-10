@@ -1,7 +1,6 @@
 import fs from "fs";
-import path from "path";
 
-const FILE_PATH = path.resolve(__dirname, "reminders.json");
+const FILE_PATH = "/tmp/reminders.json";
 
 export type Reminder = {
   text: string;
