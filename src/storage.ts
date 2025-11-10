@@ -1,10 +1,12 @@
-// src/storage.ts
 import fs from "fs";
 import path from "path";
 
 const FILE_PATH = path.resolve(__dirname, "reminders.json");
 
 export type Reminder = {
+  id: any;
+  channelId: string;
+  done: any;
   text: string;
   time: string;
 };

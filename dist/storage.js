@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.saveReminders = exports.loadReminders = void 0;
-// src/storage.ts
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const FILE_PATH = path_1.default.resolve(__dirname, "reminders.json");
