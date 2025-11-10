@@ -51,3 +51,5 @@ agent.onMessage(async (evt) => {
     };
   }
 });
+export default agent;
+
