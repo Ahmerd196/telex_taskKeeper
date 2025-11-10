@@ -3,6 +3,7 @@ import { loadReminders, saveReminders } from "./storage";
 
 let reminders: any[] = [];
 
+
 const agent = new AgentHarness();
 
 agent.onMessage(async (evt) => {
@@ -52,4 +53,5 @@ agent.onMessage(async (evt) => {
   }
 });
 export default agent;
-
+// keep process alive on Railway
+setInterval(() => {}, 1000);
