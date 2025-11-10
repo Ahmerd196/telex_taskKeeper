@@ -1,1 +1,3 @@
-/node_modules
+core.ts
+adapter.ts
+node_modules

@@ -1,5 +1,6 @@
 import { AgentHarness } from "./agent";
 import { loadReminders, saveReminders } from "./storage";
+import { randomUUID } from "crypto";
 
 let reminders = loadReminders();
 
@@ -11,7 +12,16 @@ agent.onMessage(async (evt) => {
   if (text.toLowerCase().startsWith("remind me")) {
     const reminderText = text.replace(/^remind me /i, "").trim();
     const timeIso = new Date().toISOString();
-    reminders.push({ text: reminderText, time: timeIso });
+
+    const reminder = {
+      id: randomUUID(),
+      text: reminderText,
+      time: timeIso,
+      channelId: evt.channelId ?? "default",
+      done: false,
+    };
+
+    reminders.push(reminder);
     saveReminders(reminders);
 
     return {
